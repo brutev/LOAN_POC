@@ -116,55 +116,96 @@ class _DynamicFormScreenState extends State<DynamicFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF6F7FB),
       appBar: AppBar(
-        title: const Text('Dynamic Form POC'),
+        title: const Text('Dynamic Form POC', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.white,
+        elevation: 2,
+        foregroundColor: Colors.blueAccent,
+        centerTitle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(18)),
+        ),
       ),
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () => _switchStage('PRE_SANCTION'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _stage == 'PRE_SANCTION' ? Colors.blue : Colors.grey,
-                ),
-                child: const Text('Pre-Sanction'),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _stageButton('PRE_SANCTION', Icons.assignment_turned_in),
+                  const SizedBox(width: 16),
+                  _stageButton('POST_SANCTION', Icons.verified_user),
+                ],
               ),
-              const SizedBox(width: 16),
-              ElevatedButton(
-                onPressed: () => _switchStage('POST_SANCTION'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _stage == 'POST_SANCTION' ? Colors.blue : Colors.grey,
-                ),
-                child: const Text('Post-Sanction'),
-              ),
-            ],
-          ),
-          Expanded(
-            child: _formMetadata == null
-                ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ..._formMetadata!.tiles.map((tile) => _buildTile(tile)).toList(),
-                            const SizedBox(height: 24),
-                            ElevatedButton(
-                              onPressed: _onSubmit,
-                              child: const Text('Submit'),
-                            ),
-                          ],
+            ),
+            Expanded(
+              child: _formMetadata == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ..._formMetadata!.tiles.map((tile) => _buildTile(tile)).toList(),
+                              const SizedBox(height: 32),
+                              Center(
+                                child: SizedBox(
+                                  width: 180,
+                                  height: 48,
+                                  child: ElevatedButton.icon(
+                                    onPressed: _onSubmit,
+                                    icon: const Icon(Icons.send_rounded, size: 22),
+                                    label: const Text('Submit', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blueAccent,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      elevation: 4,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _stageButton(String stage, IconData icon) {
+    final bool selected = _stage == stage;
+    return Expanded(
+      child: ElevatedButton.icon(
+        onPressed: () => _switchStage(stage),
+        icon: Icon(icon, color: selected ? Colors.white : Colors.blueAccent),
+        label: Text(
+          stage.replaceAll('_', ' ').toLowerCase().split(' ').map((w) => w[0].toUpperCase() + w.substring(1)).join(' '),
+          style: TextStyle(
+            color: selected ? Colors.white : Colors.blueAccent,
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
           ),
-        ],
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: selected ? Colors.blueAccent : Colors.white,
+          elevation: selected ? 4 : 0,
+          side: BorderSide(color: Colors.blueAccent.withOpacity(0.5), width: 1.2),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+        ),
       ),
     );
   }
